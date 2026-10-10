@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gnss-interference-monitor"
+version = "0.1.0"
+description = "Real-time GNSS station quality and interference monitoring over NTRIP/RTCM3 streams"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "confluent-kafka==2.16.0",
+    "fastapi==0.143.0",
+    "pyrtcm==1.2.0",
+    "pyyaml==6.0.3",
+    "uvicorn==0.54.0",
+]
+
+[project.optional-dependencies]
+spark = ["pyspark==3.5.9"]
+dev = [
+    "httpx==0.28.1",
+    "pytest==9.1.1",
+    "ruff==0.17.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gnss_monitor"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not integration'"
+markers = [
+    "integration: needs the docker compose stack running (make up)",
+    "spark: needs pyspark and a JVM",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
